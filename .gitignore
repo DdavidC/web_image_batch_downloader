@@ -1,1 +1,4 @@
+__pycache__/*
 build/*
+dist/*
+web_image_batch_downloader.spec

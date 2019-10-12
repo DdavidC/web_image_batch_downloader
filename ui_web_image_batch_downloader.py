@@ -117,9 +117,9 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.pushButton_BuildDLUrls = QtWidgets.QPushButton(self.frame)
-        self.pushButton_BuildDLUrls.setObjectName("pushButton_BuildDLUrls")
-        self.horizontalLayout.addWidget(self.pushButton_BuildDLUrls)
+        self.pushButton_TestDLUrls = QtWidgets.QPushButton(self.frame)
+        self.pushButton_TestDLUrls.setObjectName("pushButton_TestDLUrls")
+        self.horizontalLayout.addWidget(self.pushButton_TestDLUrls)
         self.pushButton_StartDL = QtWidgets.QPushButton(self.frame)
         self.pushButton_StartDL.setObjectName("pushButton_StartDL")
         self.horizontalLayout.addWidget(self.pushButton_StartDL)
@@ -143,7 +143,12 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.plainTextEdit_Intro)
         self.verticalLayout_2.addLayout(self.verticalLayout)
         self.tableView_Tasks = QtWidgets.QTableView(self.centralwidget)
+        self.tableView_Tasks.setEnabled(True)
+        self.tableView_Tasks.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tableView_Tasks.setObjectName("tableView_Tasks")
+        self.tableView_Tasks.horizontalHeader().setMinimumSectionSize(20)
+        self.tableView_Tasks.verticalHeader().setDefaultSectionSize(20)
+        self.tableView_Tasks.verticalHeader().setMinimumSectionSize(20)
         self.verticalLayout_2.addWidget(self.tableView_Tasks)
         self.label_ProcessMessage = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()
@@ -169,13 +174,17 @@ class Ui_MainWindow(object):
         self.pushButton_RemoveDL.clicked.connect(MainWindow.remove_current_batch_url)
         self.pushButton_SetOutDir.clicked.connect(MainWindow.choose_output_dir)
         self.pushButton_StartDL.clicked.connect(MainWindow.download_imgs)
-        self.pushButton_BuildDLUrls.clicked.connect(MainWindow.test_urls)
+        self.pushButton_TestDLUrls.clicked.connect(MainWindow.test_urls)
         self.pushButton_ResetDL.clicked.connect(MainWindow.reset_all)
+        self.tableView_Tasks.doubleClicked['QModelIndex'].connect(MainWindow.save_img)
+        self.plainTextEdit_SaveDir.textChanged['QString'].connect(MainWindow._update_output_paths)
+        self.lineEdit_Level.editingFinished.connect(MainWindow._update_output_paths)
+        self.plainTextEdit_SaveDir.editingFinished.connect(MainWindow._adjust_root)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "網頁圖片批次下載工具"))
         self.groupBox.setTitle(_translate("MainWindow", "下載設定"))
         self.label.setText(_translate("MainWindow", "批次網址"))
         self.label_2.setText(_translate("MainWindow", "存檔目錄"))
@@ -185,14 +194,24 @@ class Ui_MainWindow(object):
         self.pushButton_RemoveDL.setText(_translate("MainWindow", "移除目標"))
         self.label_3.setText(_translate("MainWindow", "子目錄層數"))
         self.lineEdit_Level.setText(_translate("MainWindow", "1"))
-        self.pushButton_BuildDLUrls.setText(_translate("MainWindow", "建立可用圖檔網址列表"))
+        self.pushButton_TestDLUrls.setText(_translate("MainWindow", "測試圖片網址狀態"))
         self.pushButton_StartDL.setText(_translate("MainWindow", "開始下載"))
         self.pushButton_ResetDL.setText(_translate("MainWindow", "重置目標"))
-        self.plainTextEdit_Intro.setPlainText(_translate("MainWindow", "批次網址簡單說明：\n"
+        self.plainTextEdit_Intro.setPlainText(_translate("MainWindow", "[批次網址說明]\n"
 "以空格切分批次內容的區塊，區塊有以下類別：\n"
 "1. 數值：#[#...][L],StartRange,EndRange[,StepValue]]\n"
-"當開頭#的個數超過數值長度且最後緊接著L（paddingLeft）時，會按照#的個數做為位數長度於左側補0\n"
-"2. 列舉：@,PossibleText1[,PossibleText2[,PossibleText3[,...]]]\n"
-"子目錄層數：取用解析網址中檔名前的部分，將各檔案自動存放於存檔目錄中對應名稱的子目錄下"))
+"從 StartRange 到 EndRange 的值以 StepValue遞增（StartRange 及 EndRange 兩個值皆包含在內）。\n"
+"當開頭 # 的個數超過數值長度且最後緊接著 L（paddingLeft）時，會按照 # 的個數做為位數長度於左側補 0 。\n"
+"例如 ###L,1,5,2 會得到 001、003、005 。\n"
+"2. 列舉：@,Text1[,Text2[,Text3[,...]]]\n"
+"將所有可能的文字列出。\n"
+"例如 @,aa,bb,cc 就會得到 aa、bb、cc 。\n"
+"\n"
+"[子目錄層數]\n"
+"取用解析網址中檔名前的部分，將各檔案自動存放於存檔目錄中對應名稱的子目錄下。\n"
+"\n"
+"[滑鼠雙擊網址列表]\n"
+"可以直接單獨下載並顯示該圖片。\n"
+""))
         self.menu.setTitle(_translate("MainWindow", "功能"))
 

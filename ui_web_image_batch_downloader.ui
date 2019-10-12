@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>網頁圖片批次下載工具</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -223,19 +223,45 @@
          <bool>true</bool>
         </property>
         <property name="plainText">
-         <string>批次網址簡單說明：
+         <string>[批次網址說明]
 以空格切分批次內容的區塊，區塊有以下類別：
 1. 數值：#[#...][L],StartRange,EndRange[,StepValue]]
-當開頭#的個數超過數值長度且最後緊接著L（paddingLeft）時，會按照#的個數做為位數長度於左側補0
-2. 列舉：@,PossibleText1[,PossibleText2[,PossibleText3[,...]]]
-子目錄層數：取用解析網址中檔名前的部分，將各檔案自動存放於存檔目錄中對應名稱的子目錄下</string>
+從 StartRange 到 EndRange 的值以 StepValue遞增（StartRange 及 EndRange 兩個值皆包含在內）。
+當開頭 # 的個數超過數值長度且最後緊接著 L（paddingLeft）時，會按照 # 的個數做為位數長度於左側補 0 。
+例如 ###L,1,5,2 會得到 001、003、005 。
+2. 列舉：@,Text1[,Text2[,Text3[,...]]]
+將所有可能的文字列出。
+例如 @,aa,bb,cc 就會得到 aa、bb、cc 。
+
+[子目錄層數]
+取用解析網址中檔名前的部分，將各檔案自動存放於存檔目錄中對應名稱的子目錄下。
+
+[滑鼠雙擊網址列表]
+可以直接單獨下載並顯示該圖片。
+</string>
         </property>
        </widget>
       </item>
      </layout>
     </item>
     <item>
-     <widget class="QTableView" name="tableView_Tasks"/>
+     <widget class="QTableView" name="tableView_Tasks">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <attribute name="horizontalHeaderMinimumSectionSize">
+       <number>20</number>
+      </attribute>
+      <attribute name="verticalHeaderMinimumSectionSize">
+       <number>20</number>
+      </attribute>
+      <attribute name="verticalHeaderDefaultSectionSize">
+       <number>20</number>
+      </attribute>
+     </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_ProcessMessage">
@@ -326,8 +352,8 @@
    <slot>download_imgs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>474</x>
-     <y>178</y>
+     <x>657</x>
+     <y>215</y>
     </hint>
     <hint type="destinationlabel">
      <x>510</x>
@@ -342,8 +368,8 @@
    <slot>test_urls()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>218</x>
-     <y>179</y>
+     <x>239</x>
+     <y>215</y>
     </hint>
     <hint type="destinationlabel">
      <x>733</x>
@@ -358,12 +384,76 @@
    <slot>reset_all()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>811</x>
-     <y>176</y>
+     <x>978</x>
+     <y>215</y>
     </hint>
     <hint type="destinationlabel">
      <x>689</x>
      <y>-13</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tableView_Tasks</sender>
+   <signal>doubleClicked(QModelIndex)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>save_img(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>170</x>
+     <y>596</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>28</x>
+     <y>-14</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plainTextEdit_SaveDir</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>_update_output_paths()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>459</x>
+     <y>127</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>-3</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lineEdit_Level</sender>
+   <signal>editingFinished()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>_update_output_paths()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>346</x>
+     <y>160</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>481</x>
+     <y>-2</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plainTextEdit_SaveDir</sender>
+   <signal>editingFinished()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>_adjust_root()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>291</x>
+     <y>127</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>276</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>
@@ -376,5 +466,7 @@
   <slot>test_urls()</slot>
   <slot>reset_all()</slot>
   <slot>save_img(QModelIndex)</slot>
+  <slot>_update_output_paths()</slot>
+  <slot>_adjust_root()</slot>
  </slots>
 </ui>
