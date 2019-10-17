@@ -46,8 +46,9 @@ class SaveImageThread(QThread):
     process_message_updated = pyqtSignal("QString")
 
 
-    def __init__(self, urls, output_paths, root):
+    def __init__(self, indexs, urls, output_paths, root):
         QThread.__init__(self)
+        self.indexs = indexs
         self.urls = urls
         self.output_paths = output_paths
         self.root = root
@@ -71,7 +72,7 @@ class SaveImageThread(QThread):
             else:
                 task_stat = "失敗"
 
-            self.process_task_updated.emit(i, 0, task_stat)
+            self.process_task_updated.emit(self.indexs[i], 0, task_stat)
 
         self.process_message_updated.emit("下載全部完成。")
 
@@ -215,17 +216,20 @@ class WebImageBatchDownloader(QMainWindow, Ui_MainWindow):
 
 
     def download_imgs(self):
+        indexs = []
         urls = []
         output_paths = []
         for r in range(self.model_task_list.rowCount()):
             if (self.model_task_list.item(r, 0).text() == "未知" or
                     self.model_task_list.item(r, 0).text() == "可用"):
+                indexs.append(r)
                 urls.append(self.model_task_list.item(r, 1).text())
                 output_paths.append(self.model_task_list.item(r, 2).text())
 
         root = self._get_root()
 
         self.save_image_thread = SaveImageThread(
+            indexs,
             urls,
             output_paths,
             root,
